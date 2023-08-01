@@ -1,25 +1,12 @@
 const mysql = require("mysql2");
 const dbConfig = require("./db-config");
 
-const connection = mysql.createConnection(dbConfig);
-connection.connect((err) => {
+const pool = mysql.createPool(dbConfig);
+
+pool.query("SELECT * FROM subjects", (err, results) => {
   if (err) {
-    console.error("Error connecting to database:", err);
+    console.error("Ошибка при выполнении запроса:", err);
     return;
   }
-
-  // SQL query to get the username
-  const sqlQuery = "SELECT * FROM subjects;";
-
-  // Execute the query
-  connection.query(sqlQuery, (err, results) => {
-    if (err) {
-      console.error("Error executing query:", err);
-      connection.end(); // Close the database connection
-      return;
-    }
-
-    console.log("Database users:", results);
-    connection.end(); // Close the database connection
-  });
+  console.log("Результаты запроса:", results);
 });
