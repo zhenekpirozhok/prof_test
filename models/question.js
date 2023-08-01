@@ -1,12 +1,13 @@
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise");
 const dbConfig = require("./db-config");
-
 const pool = mysql.createPool(dbConfig);
 
-pool.query("SELECT * FROM subjects", (err, results) => {
-  if (err) {
-    console.error("Ошибка при выполнении запроса:", err);
-    return;
-  }
-  console.log("Результаты запроса:", results);
-});
+async function getQuestionsFromDB() {
+  const dbResponse = await pool.query("SELECT name FROM subjects");
+  return dbResponse[0];
+}
+
+module.exports = {
+  getQuestionsFromDB: getQuestionsFromDB,
+};
+
