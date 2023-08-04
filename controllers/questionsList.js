@@ -1,27 +1,26 @@
 const db = require("../models/db");
 
 function getQuestionsList(test_id) {
-  return db
-    .getQuestionsFromDB(test_id)
-    .then((questions) => {
-      const promises = questions.map(question => {
-        return db
-          .getQuestionOptions(question.question_id)
-          .then((options) => {
-            question.options = options;
-            return question;
-          })
-          .catch((err) => {
-            console.log(`Ошибка при подключении к базе данных: ${err}`);
-            return question; // Preserve the question even if an error occurs
+  const questionsPromise = db.getQuestionsFromDB(test_id);
+  const optionsPromise = db.getOptionsFromDB(test_id);
+
+  return Promise.all([questionsPromise, optionsPromise])
+    .then(([questions, options]) => {
+      const questionsList = questions.map((question) => {
+        const questionOptions = options
+          .filter((option) => (option.question_id === question.question_id))
+          .sort((a, b) => {
+            return a.option_position - b.option_position;
           });
+        question.options = questionOptions;
+        return question;
       });
 
-      return Promise.all(promises);
+      return questionsList;
     })
     .catch((err) => {
-      console.log(`Ошибка при подключении к базе данных: ${err}`);
-      return []; // Return an empty array if there's an error
+      console.error("Error:", err);
+      throw err; // Re-throw the error to be caught by the caller or handle it further
     });
 }
 
