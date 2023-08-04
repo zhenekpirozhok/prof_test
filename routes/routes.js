@@ -1,17 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../models/question");
+const db = require("../models/db");
+
+const questionsList = require("../controllers/questionsList");
 
 router.get("/", (req, res) => {
-  db.getQuestionsFromDB()
+  questionsList.getQuestionsList(1)
     .then((result) => {
-      res.render('index', {
-        questions: result
+      res.render("index", {
+        questions: result,
       });
     })
-    .catch(() => {
-      console.log('Ошибка при подключении к базе данных');
-    }); 
+    .catch((err) => {
+      console.log(`Ошибка при подключении к базе данных: ${err}`);
+    });
 });
 
 router.get("/result", (req, res) => {

@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
-    <% questions.forEach((question) => { %>
-        <p>
-            <%= question.name %>
-        </p>
-    <% }); %>
-</body>
+  </head>
+  <body>
+    <form method="post">
+        <% questions.forEach(question => { %>
+            <p><%= question.question_text %></p>
+            <% question.options.forEach(option => { %>
+            <input
+              type="radio"
+              id="<%= option.option_id %>"
+              name="<%= question.question_id %>"
+              value="<%= option.option_point %>"
+              required
+            />
+            <label for="<%= option.option_id %>"><%= option.option_text %></label>
+            <br/>
+            <% }); %> <% }); %>
+
+            <input type="submit" value="Отправить">
+    </form>
+  </body>
 </html>
