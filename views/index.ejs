@@ -6,7 +6,7 @@
     <title>Document</title>
   </head>
   <body>
-    <form method="post">
+    <form method="post" action="/submit">
         <% questions.forEach(question => { %>
             <p><%= question.question_text %></p>
             <% question.options.forEach(option => { %>
@@ -14,7 +14,7 @@
               type="radio"
               id="<%= option.option_id %>"
               name="<%= question.question_id %>"
-              value="<%= option.option_point %>"
+              value="<%= option.option_point %>"             
               required
             />
             <label for="<%= option.option_id %>"><%= option.option_text %></label>

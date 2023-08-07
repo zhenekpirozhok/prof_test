@@ -17,9 +17,15 @@ async function getQuestionOptions(question_id) {
   return dbResponse[0];
 }
 
+async function getAprobations(test_id) {
+  const dbResponse = await pool.query(`SELECT * FROM scale_direction WHERE test_id=?;`, [test_id]);
+  return dbResponse[0];
+}
+
 module.exports = {
   getQuestionsFromDB: getQuestionsFromDB,
   getQuestionOptions: getQuestionOptions,
   getOptionsFromDB: getOptionsFromDB,
+  getAprobations: getAprobations,
 };
 
