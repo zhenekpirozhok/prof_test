@@ -21,19 +21,18 @@ router.get("/", (req, res) => {
 router.post("/submit", (req, res) => {
   const formData = req.body;
 
-  resultCounter.countResult(formData, 1).then(directions => {
-    res.send(`
-Ваш результат:\n
-Business Analysis - ${(directions["1"]*100).toFixed(0)}%
-Data Engineering - ${(directions["2"]*100).toFixed(0)}%
-Development - ${(directions["3"]*100).toFixed(0)}%
-Testing - ${(directions["4"]*100).toFixed(0)}%
-    `);
-  }).catch(console.log);
+  resultCounter
+    .countResult(formData, 1)
+    .then((directions) => {
+      req.session.directions = directions;
+      res.redirect("/result");
+    })
+    .catch(console.log);
 });
 
 router.get("/result", (req, res) => {
-  res.send("Your result is counting...");
+  const directions = req.session.directions;
+  res.render("result", { directions });
 });
 
 module.exports = router;
