@@ -20,13 +20,14 @@ router.get("/", (req, res) => {
 router.post('/submit', (req, res) => {
   const formData = req.body;
   console.log(formData);
-  const avg = resultCounter.countScaleAvg(formData, 1);
-  console.log('scale avg:', avg);
-  const aprRatios = resultCounter.countPassAprobationRatio(avg, 1);
-  console.log('aprobation ratios:');
-  aprRatios.forEach(element => {
+  
+  resultCounter.countScaleAvg(formData, 1)
+  .then(scaleAvgData => resultCounter.countPassAprobationRatio(scaleAvgData, 1))
+  .then(ratioArr => ratioArr.forEach(element => {
     console.log(element);
-  });
+  }))
+  .catch(console.log);
+
   res.redirect('/result');
 });
 
