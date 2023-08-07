@@ -20,21 +20,16 @@ router.get("/", (req, res) => {
 
 router.post("/submit", (req, res) => {
   const formData = req.body;
-  console.log(formData);
 
-  resultCounter
-    .countScaleAvg(formData, 1)
-    .then((scaleAvgData) =>
-      resultCounter.countPassAprobationRatio(scaleAvgData, 1)
-    )
-    .then((ratioArr) => {
-      console.log(ratioArr);
-      return resultCounter.getDirectionMatches(ratioArr);
-    })
-    .then(console.log)
-    .catch(console.log);
-
-  res.redirect("/result");
+  resultCounter.countResult(formData, 1).then(directions => {
+    res.send(`
+Ваш результат:\n
+Business Analysis - ${(directions["1"]*100).toFixed(0)}%
+Data Engineering - ${(directions["2"]*100).toFixed(0)}%
+Development - ${(directions["3"]*100).toFixed(0)}%
+Testing - ${(directions["4"]*100).toFixed(0)}%
+    `);
+  }).catch(console.log);
 });
 
 router.get("/result", (req, res) => {

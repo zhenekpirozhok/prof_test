@@ -83,8 +83,19 @@ function getDirectionMatches(aprobationRatios) {
   });
 }
 
+function countResult(formData, test_id) {
+  return new Promise((res, rej) => {
+    countScaleAvg(formData, test_id)
+    .then(scaleAvgData => countPassAprobationRatio(scaleAvgData, test_id))
+    .then(getDirectionMatches)
+    .then(res)
+    .catch(rej);
+  });
+}
+
 module.exports = {
   countScaleAvg: countScaleAvg,
   countPassAprobationRatio: countPassAprobationRatio,
   getDirectionMatches: getDirectionMatches,
+  countResult: countResult,
 };
