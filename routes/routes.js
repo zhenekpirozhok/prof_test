@@ -6,7 +6,8 @@ const resultCounter = require("../controllers/result");
 const questionsList = require("../controllers/questionsList");
 
 router.get("/", (req, res) => {
-  questionsList.getQuestionsList(1)
+  questionsList
+    .getQuestionsList(1)
     .then((result) => {
       res.render("index", {
         questions: result,
@@ -17,23 +18,27 @@ router.get("/", (req, res) => {
     });
 });
 
-router.post('/submit', (req, res) => {
+router.post("/submit", (req, res) => {
   const formData = req.body;
   console.log(formData);
-  
-  resultCounter.countScaleAvg(formData, 1)
-  .then(scaleAvgData => resultCounter.countPassAprobationRatio(scaleAvgData, 1))
-  .then(ratioArr => ratioArr.forEach(element => {
-    console.log(element);
-  }))
-  .catch(console.log);
 
-  res.redirect('/result');
+  resultCounter
+    .countScaleAvg(formData, 1)
+    .then((scaleAvgData) =>
+      resultCounter.countPassAprobationRatio(scaleAvgData, 1)
+    )
+    .then((ratioArr) => {
+      console.log(ratioArr);
+      return resultCounter.getDirectionMatches(ratioArr);
+    })
+    .then(console.log)
+    .catch(console.log);
+
+  res.redirect("/result");
 });
 
-router.get('/result', (req, res) => {
-  res.send('Your result is counting...');
+router.get("/result", (req, res) => {
+  res.send("Your result is counting...");
 });
-
 
 module.exports = router;

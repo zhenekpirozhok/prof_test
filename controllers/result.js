@@ -45,6 +45,7 @@ function countPassAprobationRatio(scaleAvgData, test_id) {
               scaleAvgData[apr.scale_id] < apr.aprobation_avg
                 ? +(scaleAvgData[apr.scale_id] / apr.aprobation_avg).toFixed(2)
                 : 1,
+            weight: apr.weight,
           }))
         );
       })
@@ -54,7 +55,36 @@ function countPassAprobationRatio(scaleAvgData, test_id) {
   });
 }
 
+function getDirectionMatches(aprobationRatios) {
+  return new Promise((res, rej) => {
+    const directionWeights = aprobationRatios.reduce((acc, current) => {
+      acc[current.direction_id]
+        ? (acc[current.direction_id] += current.weight)
+        : (acc[current.direction_id] = current.weight);
+      return acc;
+    }, {});
+
+    const directionObject = aprobationRatios.reduce((acc, current) => {
+      acc[current.direction_id]
+        ? (acc[current.direction_id] += current.percent_match * current.weight)
+        : (acc[current.direction_id] = current.percent_match * current.weight);
+      return acc;
+    }, {});
+
+    for (const key in directionObject) {
+      if (Object.hasOwnProperty.call(directionObject, key)) {
+        directionObject[key] = +(
+          directionObject[key] / directionWeights[key]
+        ).toFixed(2);
+      }
+    }
+
+    res(directionObject);
+  });
+}
+
 module.exports = {
   countScaleAvg: countScaleAvg,
   countPassAprobationRatio: countPassAprobationRatio,
+  getDirectionMatches: getDirectionMatches,
 };
