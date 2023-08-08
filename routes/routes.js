@@ -1,13 +1,24 @@
-const express = require("express");
-const router = express.Router();
-const db = require("../models/db");
-const resultCounter = require("../controllers/result");
+import { Router } from "express";
+const router = Router();
+import { registerPass } from "../models/db";
+import { countResult } from "../controllers/result";
+import { v4 as uuidv4 } from "uuid";
 
-const questionsList = require("../controllers/questionsList");
+import { getQuestionsList } from "../controllers/questionsList";
 
 router.get("/", (req, res) => {
-  questionsList
-    .getQuestionsList(1)
+  res.render("user");
+});
+
+router.get("/getName", (req, res) => {
+  req.session.userName = req.query.name;
+  req.session.startTime = new Date();
+
+  res.redirect("/it-prof-test");
+});
+
+router.get("/it-prof-test", (req, res) => {
+  getQuestionsList(1)
     .then((result) => {
       res.render("index", {
         questions: result,
@@ -20,19 +31,24 @@ router.get("/", (req, res) => {
 
 router.post("/submit", (req, res) => {
   const formData = req.body;
+  req.session.endTime = new Date();
+  const linkGuid = uuidv4();
 
-  resultCounter
-    .countResult(formData, 1)
-    .then((directions) => {
-      req.session.directions = directions;
-      res.redirect("/result");
-    })
+  registerPass(
+    1,
+    req.session.name,
+    linkGuid,
+    req.session.startTime,
+    req.session.endTime
+  )
+    .then(countResult(formData, 1))
+    .then(res.redirect("/result" + linkGuid))
     .catch(console.log);
 });
 
-router.get("/result", (req, res) => {
+router.get("/result/:linkGuid", (req, res) => {
   const directions = req.session.directions;
   res.render("result", { directions });
 });
 
-module.exports = router;
+export default router;
