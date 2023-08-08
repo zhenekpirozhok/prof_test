@@ -57,8 +57,12 @@ function countPassAprobationRatio(scaleAvgData, test_id) {
             scale_id: apr.scale_id,
             direction_id: apr.direction_id,
             percent_match:
-              scaleAvgData[apr.scale_id] < apr.aprobation_avg
-                ? +(scaleAvgData[apr.scale_id] / apr.aprobation_avg).toFixed(2)
+              scaleAvgData.find((elem) => elem.scale_id == apr.scale_id) <
+              apr.aprobation_avg
+                ? +(
+                    scaleAvgData.find((elem) => elem.scale_id == apr.scale_id) /
+                    apr.aprobation_avg
+                  ).toFixed(2)
                 : 1,
             weight: apr.weight,
           }))
