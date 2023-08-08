@@ -1,12 +1,21 @@
 const db = require("../models/db");
 
-function countScaleAvg(formData, test_id) {
+class PassScale {
+  constructor(pass_id, scale_id, sum, average) {
+    this.pass_id = pass_id;
+    this.scale_id = scale_id;
+    this.sum = sum;
+    this.average = average;
+  }
+}
+
+function countScaleAvg(formData, test_id, pass_id) {
   return new Promise((resolve, reject) => {
     db.getQuestionsFromDB(test_id)
       .then((questions) => {
         const questionsPerScale = {};
         const scaleSums = {};
-        const scaleAVG = {};
+        const scaleAVG = [];
 
         questions.forEach((question) => {
           scaleSums[question.scale_id]
@@ -20,8 +29,14 @@ function countScaleAvg(formData, test_id) {
 
         for (const key in scaleSums) {
           if (Object.hasOwnProperty.call(scaleSums, key)) {
-            scaleAVG[key] = scaleSums[key] / questionsPerScale[key];
-            scaleAVG[key] = +scaleAVG[key].toFixed(2);
+            scaleAVG.push(
+              new PassScale(
+                pass_id,
+                key,
+                scaleSums[key],
+                +(scaleSums[key] / questionsPerScale[key]).toFixed(2)
+              )
+            );
           }
         }
 
@@ -86,10 +101,10 @@ function getDirectionMatches(aprobationRatios) {
 function countResult(formData, test_id) {
   return new Promise((res, rej) => {
     countScaleAvg(formData, test_id)
-    .then(scaleAvgData => countPassAprobationRatio(scaleAvgData, test_id))
-    .then(getDirectionMatches)
-    .then(res)
-    .catch(rej);
+      .then((scaleAvgData) => countPassAprobationRatio(scaleAvgData, test_id))
+      .then(getDirectionMatches)
+      .then(res)
+      .catch(rej);
   });
 }
 
