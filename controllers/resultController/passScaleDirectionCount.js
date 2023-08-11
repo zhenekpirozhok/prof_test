@@ -5,13 +5,12 @@ const { getAprobations } = require("../../models/db");
 function calculateAprobationRatio(scaleAvgData, aprobation, pass_id) {
   const scaleId = aprobation.scale_id;
   const aprobationAvg = aprobation.aprobation_avg;
-
-  const matchingScale = scaleAvgData.find((elem) => elem.scale_id == scaleId);
+  const matchingPassScale = scaleAvgData.find((elem) => elem.scale_id == scaleId);
 
   const percentMatch =
-    matchingScale < aprobationAvg
-      ? +(matchingScale / aprobationAvg).toFixed(2)
-      : 1;
+  matchingPassScale.average < aprobationAvg
+      ? +(matchingPassScale.average / aprobationAvg).toFixed(2)
+      : 1;   
 
   return new PassScaleDirection(
     pass_id,
