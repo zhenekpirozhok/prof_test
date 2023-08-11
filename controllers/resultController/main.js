@@ -29,15 +29,15 @@ function countResult(formData, test_id, pass_id) {
   return new Promise((res, rej) => {
     getPassScaleObjects(formData, pass_id, test_id)
       .then((passScaleObjects) => {
-        console.log(passScaleObjects);
+        db.writeToPassScale(passScaleObjects);
         return getPassScaleDirectionObjects(passScaleObjects, pass_id, test_id);
       })
       .then((passScaleDirectionObjects) => {
-        console.log(passScaleDirectionObjects);
+        db.writeToPassScaleDirection(passScaleDirectionObjects);
         return getPassDirectionObjects(passScaleDirectionObjects, pass_id);
       })
       .then((passDirectionObjects) => {
-        console.log(passDirectionObjects);
+        db.writeToPassDirection(passDirectionObjects);
         res(passDirectionObjects);
       })
       .catch((err) => {

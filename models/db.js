@@ -89,7 +89,7 @@ async function writeToPassScale(dataArray) {
 // Later I need to think about what's to put in text match
 async function writeToPassScaleDirection(dataArray) {
   try {
-    const valuesToInsert = dataArray.map((element) => Object.values(element));
+    const valuesToInsert = dataArray.map((element) => Object.values(element).slice(0, 4));
     const query = `INSERT INTO test_pass_scale_direction 
     (pass_id, scale_id, direction_id, percent_match) 
     VALUES ?`;

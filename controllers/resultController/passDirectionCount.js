@@ -27,9 +27,6 @@ function calculateFinalDirectionMatches(
 ) {
   const finalDirectionMatches = [];
 
-  console.log('Direction object: ', directionObject);
-  console.log('Direction weights: ', directionWeights);
-
   for (const key in directionObject) {
     if (Object.hasOwnProperty.call(directionObject, key)) {
       finalDirectionMatches.push(
