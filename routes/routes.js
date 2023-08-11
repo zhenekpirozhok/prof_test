@@ -1,24 +1,38 @@
-import { Router } from "express";
-const router = Router();
-import { registerPass } from "../models/db";
-import { countResult } from "../controllers/result";
-import { v4 as uuidv4 } from "uuid";
+const express = require("express");
+const router = express.Router();
+const { registerPass, getTestIdByLink } = require("../models/db");
+const { countResult } = require("../controllers/resultController/main");
+const { v4: uuidv4 } = require("uuid");
 
-import { getQuestionsList } from "../controllers/questionsList";
+const { getQuestionsList } = require("../controllers/questionsList");
 
-router.get("/", (req, res) => {
-  res.render("user");
+router.get("/favicon.ico", (req, res) => {
+  // Send favicon.ico file here
 });
 
-router.get("/getName", (req, res) => {
+router.get("/getUserInfo", (req, res) => {
   req.session.userName = req.query.name;
   req.session.startTime = new Date();
 
-  res.redirect("/it-prof-test");
+  res.redirect(`/${req.session.testLink}/test`);
 });
 
-router.get("/it-prof-test", (req, res) => {
-  getQuestionsList(1)
+router.get("/:testLink", (req, res) => {
+  req.session.testLink = req.params.testLink;
+
+  getTestIdByLink(req.session.testLink)
+    .then((curTest) => {
+      req.session.test_id = curTest[0].test_id;
+      res.render("user");
+    })
+    .catch((error) => {
+      res.status(404).send("Test not found");
+      console.log(error);
+    });
+});
+
+router.get("/:testLink/test", (req, res) => {
+  getQuestionsList(req.session.test_id)
     .then((result) => {
       res.render("index", {
         questions: result,
@@ -35,14 +49,14 @@ router.post("/submit", (req, res) => {
   const linkGuid = uuidv4();
 
   registerPass(
-    1,
+    req.session.test_id,
     req.session.name,
     linkGuid,
     req.session.startTime,
     req.session.endTime
   )
-    .then(countResult(formData, 1))
-    .then(res.redirect("/result" + linkGuid))
+    .then((pass_id) => countResult(formData, req.session.test_id, pass_id))
+    .then(res.redirect("/result/" + linkGuid))
     .catch(console.log);
 });
 
@@ -51,4 +65,4 @@ router.get("/result/:linkGuid", (req, res) => {
   res.render("result", { directions });
 });
 
-export default router;
+module.exports = router;

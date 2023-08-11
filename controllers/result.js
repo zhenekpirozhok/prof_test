@@ -39,7 +39,7 @@ function countScaleAvg(formData, test_id, pass_id) {
             );
           }
         }
-
+        console.log(scaleAVG);
         resolve(scaleAVG);
       })
       .catch((error) => {

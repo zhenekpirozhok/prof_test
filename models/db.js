@@ -47,13 +47,15 @@ async function registerPass(
   VALUES ?`;
 
   try {
-    await pool.query(query, {
+    const [pass] = await pool.query(query, {
       test_id,
       name,
       link_guid,
       timestamp_begin,
       timestamp_end,
     });
+
+    return pass.pass_id;
   } catch (error) {
     console.log("Error inserting data to db: ", error);
   }
@@ -105,6 +107,27 @@ async function writeToPassDirection(dataArray) {
   }
 }
 
+async function getTestIdByLink(link_name) {
+  const dbResponse = await pool.query(
+    `SELECT test_id FROM test WHERE link_name=?;`,
+    [link_name]
+  );
+
+  if (dbResponse[0].length === 0) {
+    throw new Error("Test not found"); // Throw an error if no test is found
+  }
+
+  return dbResponse[0];
+}
+
+async function getTests() {
+  const dbResponse = await pool.query(
+    `SELECT * FROM test;`
+  );
+
+  return dbResponse[0];
+}
+
 module.exports = {
   getQuestionsFromDB: getQuestionsFromDB,
   getQuestionOptions: getQuestionOptions,
@@ -114,4 +137,6 @@ module.exports = {
   writeToPassScale: writeToPassScale,
   writeToPassScaleDirection: writeToPassScaleDirection,
   writeToPassDirection: writeToPassDirection,
+  getTestIdByLink: getTestIdByLink,
+  getTests: getTests,
 };
