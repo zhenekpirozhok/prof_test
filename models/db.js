@@ -42,24 +42,28 @@ async function registerPass(
   timestamp_begin,
   timestamp_end
 ) {
-  const query = `INSERT INTO test_pass 
-  (test_id, name, link_guid, timestamp_begin, timestamp_end) 
-  VALUES ?`;
+  const query = `
+    INSERT INTO test_pass 
+      (test_id, name, link_guid, timestamp_begin, timestamp_end) 
+    VALUES 
+      (?, ?, ?, ?, ?)
+  `;
 
   try {
-    const [pass] = await pool.query(query, {
+    const [result] = await pool.query(query, [
       test_id,
       name,
       link_guid,
       timestamp_begin,
       timestamp_end,
-    });
+    ]);
 
-    return pass.pass_id;
+    return result.insertId;
   } catch (error) {
     console.log("Error inserting data to db: ", error);
   }
 }
+
 
 /*
 Type of object in the dataArray:
@@ -121,9 +125,7 @@ async function getTestIdByLink(link_name) {
 }
 
 async function getTests() {
-  const dbResponse = await pool.query(
-    `SELECT * FROM test;`
-  );
+  const dbResponse = await pool.query(`SELECT * FROM test;`);
 
   return dbResponse[0];
 }

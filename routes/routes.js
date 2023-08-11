@@ -3,6 +3,7 @@ const router = express.Router();
 const { registerPass, getTestIdByLink } = require("../models/db");
 const { countResult } = require("../controllers/resultController/main");
 const { v4: uuidv4 } = require("uuid");
+const { dateToTimeStamp } = require("../utils/date");
 
 const { getQuestionsList } = require("../controllers/questionsList");
 
@@ -12,7 +13,7 @@ router.get("/favicon.ico", (req, res) => {
 
 router.get("/getUserInfo", (req, res) => {
   req.session.userName = req.query.name;
-  req.session.startTime = new Date();
+  req.session.startTime = dateToTimeStamp(new Date());
 
   res.redirect(`/${req.session.testLink}/test`);
 });
@@ -45,12 +46,12 @@ router.get("/:testLink/test", (req, res) => {
 
 router.post("/submit", (req, res) => {
   const formData = req.body;
-  req.session.endTime = new Date();
+  req.session.endTime = dateToTimeStamp(new Date());
   const linkGuid = uuidv4();
 
   registerPass(
     req.session.test_id,
-    req.session.name,
+    req.session.userName,
     linkGuid,
     req.session.startTime,
     req.session.endTime
