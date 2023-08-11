@@ -8,11 +8,12 @@ class PassScale {
 }
 
 class PassScaleDirection {
-  constructor(pass_id, scale_id, direction_id, percent_match) {
+  constructor(pass_id, scale_id, direction_id, percent_match, weight) {
     this.pass_id = +pass_id;
     this.scale_id = +scale_id;
     this.direction_id = +direction_id;
     this.percent_match = +percent_match;
+    this.weight = +weight;
   }
 }
 

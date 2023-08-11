@@ -16,7 +16,8 @@ function calculateAprobationRatio(scaleAvgData, aprobation, pass_id) {
     pass_id,
     scaleId,
     aprobation.direction_id,
-    percentMatch
+    percentMatch,
+    aprobation.weight
   );
 }
 
