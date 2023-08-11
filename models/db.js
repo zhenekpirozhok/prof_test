@@ -64,16 +64,6 @@ async function registerPass(
   }
 }
 
-
-/*
-Type of object in the dataArray:
-{
-  pass_id: ...,
-  scale_id: ...,
-  sum: ...,
-  average: ...
-}
-*/
 async function writeToPassScale(dataArray) {
   try {
     const valuesToInsert = dataArray.map((element) => Object.values(element));
