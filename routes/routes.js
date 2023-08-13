@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { registerPass, getTestIdByLink } = require("../models/db");
+const {
+  registerPass,
+  getTestIdByLink,
+  getTestResult,
+  getUserFromPass
+} = require("../models/db");
 const { countResult } = require("../controllers/resultController/main");
 const { v4: uuidv4 } = require("uuid");
 const { dateToTimeStamp } = require("../utils/date");
@@ -44,26 +49,42 @@ router.get("/:testLink/test", (req, res) => {
     });
 });
 
-router.post("/submit", (req, res) => {
-  const formData = req.body;
-  req.session.endTime = dateToTimeStamp(new Date());
-  const linkGuid = uuidv4();
+router.post("/submit", async (req, res) => {
+  try {
+    const formData = req.body;
+    req.session.endTime = dateToTimeStamp(new Date());
+    const linkGuid = uuidv4();
 
-  registerPass(
-    req.session.test_id,
-    req.session.userName,
-    linkGuid,
-    req.session.startTime,
-    req.session.endTime
-  )
-    .then((pass_id) => countResult(formData, req.session.test_id, pass_id))
-    .then(res.redirect("/result/" + linkGuid))
-    .catch(console.log);
+    const pass_id = await registerPass(
+      req.session.test_id,
+      req.session.userName,
+      linkGuid,
+      req.session.startTime,
+      req.session.endTime
+    );
+
+    await countResult(formData, req.session.test_id, pass_id);
+
+    res.redirect("/result/" + linkGuid);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("An error occurred while processing the request.");
+  }
 });
 
 router.get("/result/:linkGuid", (req, res) => {
-  const directions = req.session.directions;
-  res.render("result", { directions });
+  Promise.all([
+    getTestResult(req.params.linkGuid),
+    getUserFromPass(req.params.linkGuid)
+  ])
+    .then(([directions, user]) => {
+      directions = directions.sort((a, b) => {return b.percent_match - a.percent_match});
+      res.render("result", { directions, name: user[0].name });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(404).send(`Sorry, couldn't find result under link ${req.params.linkGuid} :(`)
+    });
 });
 
 module.exports = router;

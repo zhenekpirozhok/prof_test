@@ -6,11 +6,9 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Ваш результат</h1>
-    <p><b>Business Analysis: </b><%= (directions["1"]*100).toFixed(0) %>%</p>
-    <p><b>Data Engineering: </b><%= (directions["2"]*100).toFixed(0) %>%</p>
-    <p><b>Development: </b><%= (directions["3"]*100).toFixed(0) %>%</p>
-    <p><b>Testing: </b><%= (directions["4"]*100).toFixed(0) %>%</p>
-    
+    <h1><%= name %>, Ваш результат:</h1>
+    <% directions.forEach(direction => { %>
+        <p><b><%= direction.direction_name %>: </b><%= (direction.percent_match*100).toFixed(0) %>%</p>
+    <% }); %>
 </body>
 </html>

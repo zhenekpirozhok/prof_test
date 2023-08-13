@@ -120,6 +120,42 @@ async function getTests() {
   return dbResponse[0];
 }
 
+async function getTestResult(link_guid) {
+  const query = `
+  SELECT test_pass_direction.percent_match, direction.direction_name, pass_id
+  FROM test_pass_direction 
+  INNER JOIN direction
+  ON test_pass_direction.direction_id = direction.direction_id
+  HAVING pass_id = (
+    SELECT pass_id 
+    FROM test_pass
+    WHERE link_guid = ?
+  );
+  `;
+
+  const dbResponse = await pool.query(
+    query,
+    [link_guid]
+  );
+
+  if (dbResponse[0].length === 0) {
+    throw new Error("Link not found"); 
+  }
+
+  return dbResponse[0];
+}
+
+async function getUserFromPass(link_guid) {
+  const query = 
+  `
+  SELECT name FROM test_pass
+  WHERE link_guid = ?;
+  `;
+  const dbResponse = await pool.query(query, link_guid);
+
+  return dbResponse[0];
+}
+
 module.exports = {
   getQuestionsFromDB: getQuestionsFromDB,
   getQuestionOptions: getQuestionOptions,
@@ -131,4 +167,6 @@ module.exports = {
   writeToPassDirection: writeToPassDirection,
   getTestIdByLink: getTestIdByLink,
   getTests: getTests,
+  getTestResult: getTestResult,
+  getUserFromPass: getUserFromPass
 };

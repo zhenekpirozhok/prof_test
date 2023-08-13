@@ -38,8 +38,8 @@ function countResult(formData, test_id, pass_id) {
       })
       .then((passDirectionObjects) => {
         db.writeToPassDirection(passDirectionObjects);
-        res(passDirectionObjects);
       })
+      .then(res)
       .catch((err) => {
         console.log(err);
         rej(err);
