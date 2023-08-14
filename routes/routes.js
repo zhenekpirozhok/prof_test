@@ -45,7 +45,7 @@ router.get("/:testLink/test", (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(`Ошибка при подключении к базе данных: ${err}`);
+      console.log(`An error occured why trying to connect to db: ${err}`);
     });
 });
 
@@ -78,12 +78,12 @@ router.get("/result/:linkGuid", (req, res) => {
     getUserFromPass(req.params.linkGuid)
   ])
     .then(([directions, user]) => {
-      directions = directions.sort((a, b) => {return b.percent_match - a.percent_match});
       res.render("result", { directions, name: user[0].name });
     })
     .catch(err => {
       console.log(err);
-      res.status(404).send(`Sorry, couldn't find result under link ${req.params.linkGuid} :(`)
+      res.status(404).send(`Sorry, couldn't find result under link ${req.params.linkGuid} :(
+        Try to reload page or check if the link exists`)
     });
 });
 

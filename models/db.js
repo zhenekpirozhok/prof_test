@@ -130,7 +130,8 @@ async function getTestResult(link_guid) {
     SELECT pass_id 
     FROM test_pass
     WHERE link_guid = ?
-  );
+  )
+  ORDER BY test_pass_direction.percent_match DESC;
   `;
 
   const dbResponse = await pool.query(

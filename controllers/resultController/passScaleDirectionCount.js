@@ -5,18 +5,27 @@ const { getAprobations } = require("../../models/db");
 function calculateAprobationRatio(scaleAvgData, aprobation, pass_id) {
   const scaleId = aprobation.scale_id;
   const aprobationAvg = aprobation.aprobation_avg;
-  const matchingPassScale = scaleAvgData.find((elem) => elem.scale_id == scaleId);
+  const matchingPassScale = scaleAvgData.find(
+    (elem) => elem.scale_id == scaleId
+  );
 
-  const percentMatch =
-  matchingPassScale.average < aprobationAvg
-      ? +(matchingPassScale.average / aprobationAvg).toFixed(2)
-      : 1;   
+  const percentMatch = +(matchingPassScale.average / aprobationAvg).toFixed(2);
+
+  // const percentMatch =
+  // matchingPassScale.average < aprobationAvg
+  //     ? +(matchingPassScale.average / aprobationAvg).toFixed(2)
+  //     : 1;
+
+  const percentMatchFinal = Math.min(
+    percentMatch,
+    1
+  );
 
   return new PassScaleDirection(
     pass_id,
     scaleId,
     aprobation.direction_id,
-    percentMatch,
+    percentMatchFinal,
     aprobation.weight
   );
 }
