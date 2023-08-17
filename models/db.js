@@ -114,8 +114,14 @@ async function getTestIdByLink(link_name) {
   return dbResponse[0];
 }
 
-async function getTests() {
+async function getTestsFromDB() {
   const dbResponse = await pool.query(`SELECT * FROM test;`);
+
+  return dbResponse[0];
+}
+
+async function getPassesFromDB() {
+  const dbResponse = await pool.query(`SELECT * FROM test_pass;`);
 
   return dbResponse[0];
 }
@@ -157,6 +163,39 @@ async function getUserFromPass(link_guid) {
   return dbResponse[0];
 }
 
+async function getAdminsFromDB() {
+  const dbResponse = await pool.query(
+    `SELECT * FROM admin;`
+  );
+  return dbResponse[0];
+}
+
+async function getAdminByName(userName) {
+  const dbResponse = await pool.query(
+    `SELECT * FROM admin
+    WHERE username = ?;`
+  , [userName]);
+
+  if(!dbResponse[0][0]) {
+    throw new Error('Admin not found');
+  }
+
+  return dbResponse[0][0];
+}
+
+async function getAdminById(userID) {
+  const dbResponse = await pool.query(
+    `SELECT * FROM admin
+    WHERE id = ?;`
+  , [userID]);
+
+  if(!dbResponse[0][0]) {
+    throw new Error('Admin not found');
+  }
+
+  return dbResponse[0][0];
+}
+
 module.exports = {
   getQuestionsFromDB: getQuestionsFromDB,
   getQuestionOptions: getQuestionOptions,
@@ -167,7 +206,11 @@ module.exports = {
   writeToPassScaleDirection: writeToPassScaleDirection,
   writeToPassDirection: writeToPassDirection,
   getTestIdByLink: getTestIdByLink,
-  getTests: getTests,
+  getTestsFromDB: getTestsFromDB,
   getTestResult: getTestResult,
-  getUserFromPass: getUserFromPass
+  getUserFromPass: getUserFromPass,
+  getAdminsFromDB: getAdminsFromDB,
+  getAdminByName: getAdminByName,
+  getAdminById: getAdminById,
+  getPassesFromDB: getPassesFromDB,
 };

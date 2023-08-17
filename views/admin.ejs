@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <% tests.forEach(test => { %> 
+      <h1>Test number <%= test.test_id %></h1>
+    <% passes.filter(pass => pass.test_id === test.test_id) 
+    .forEach(pass => { %>
+      <a href="#">Download pass number <%= pass.pass_id %></a>
+      <br>
+    <% });  
+    }); %>
+  </body>
+</html>
